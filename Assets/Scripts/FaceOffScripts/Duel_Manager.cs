@@ -25,52 +25,55 @@ public class Duel_Manager : MonoBehaviour
     }
 
     public void FindDuelists(){
-        if (visible.Count < 3){
+        if (visible.Count < 3 && visible.Count > 0){
             for (int i = 0; i < visible.Count; i++){
                 Dueling.Add(visible[i].gameObject);
             }
         }
-        else{
+        else if (visible.Count == 3){
             for (int i = 0; i < 3; i++){
                 Dueling.Add(visible[i].gameObject);
             }
         }
-
-        this.transform.position = Dueling[0].transform.position;
-        SphereCollider col = this.gameObject.AddComponent<SphereCollider>();
-        col.isTrigger = true;
-        col.radius = Mathf.Lerp(0, 20, 1);
-        // StartDuel();
+        
+        if (Dueling.Count < 3 && Dueling.Count > 0){
+            this.transform.position = Dueling[0].transform.position;
+            SphereCollider col = this.gameObject.AddComponent<SphereCollider>();
+            col.isTrigger = true;
+            for (float x = 0; x < 1; x += Time.deltaTime/0.5f){
+                col.radius = Mathf.Lerp(0, 20, x);
+            }
+            // col.radius = 20;
+        }
+        StartDuel();
     }
 
-    // public void StartDuel(){
-
-    // }
+    public void StartDuel(){
+        
+    }
 
     private void OnTriggerEnter(Collider other) {
-        List<GameObject> enemies = new List<GameObject>();
         if (other.gameObject.tag == "Enemy"){
-            enemies.Add(other.gameObject);
-        }
-
-        for (int x = 0; x < enemies.Count; x++){
-            if (Dueling.Count >= 3){
-                break;
-            }
-            for (int y = 0; y < Dueling.Count; y++){
-                if (enemies[x] != Dueling[y]){
-                    Dueling.Add(enemies[x]);
+            for (int i = 0; i < Dueling.Count; i++){
+                print("Dueling Count: " + Dueling.Count);
+                if (Dueling.Count == 1){
+                    if (other.gameObject.name != Dueling[i].name){
+                        Dueling.Add(other.gameObject);
+                    }
+                }else if(Dueling.Count == 2){
+                    if ((other.gameObject.name != Dueling[i].name) && (other.gameObject.name != Dueling[i+1].name)){
+                        Dueling.Add(other.gameObject);
+                    }
                 }
-
-                if (Dueling.Count >= 3){
+                else if(Dueling.Count >= 3){
+                    if(GetComponent<SphereCollider>() == true){
+                        Destroy(GetComponent<SphereCollider>());
+                    }
                     break;
                 }
             }
         }
-
-        enemies.Clear();
-        if(GetComponent<SphereCollider>() == true){
-            Destroy(GetComponent<SphereCollider>());
-        }
     }
+
+
 }
