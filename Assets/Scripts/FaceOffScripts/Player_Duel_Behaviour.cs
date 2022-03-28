@@ -32,7 +32,8 @@ public class Player_Duel_Behaviour : MonoBehaviour
 
     public float verticalVel;
     private Vector3 moveVector;
-    public Letterbox letterBox;
+    // public Letterbox letterBox;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,13 +59,13 @@ public class Player_Duel_Behaviour : MonoBehaviour
 
         moveVector = new Vector3(0, verticalVel * .2f * Time.deltaTime, 0);
         controller.Move(moveVector);
-        if (Input.GetKeyDown(KeyCode.Space)){
-            letterBox.Show(150f, 0.3f);
-        }
+        // if (Input.GetKeyDown(KeyCode.Space)){
+        //     letterBox.Show(150f, 0.3f);
+        // }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift)){
-            letterBox.Hide(0.3f);
-        }
+        // if (Input.GetKeyDown(KeyCode.LeftShift)){
+        //     letterBox.Hide(0.3f);
+        // }
     }
 
     void PlayerMoveAndRotation() {
