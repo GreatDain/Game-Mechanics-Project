@@ -13,6 +13,7 @@ public class Duel_Manager : MonoBehaviour
     public GameObject target;
     private float walkSpeed = 1f;
     public int Limiter = 0;
+    private int transition = 0;
     public Letterbox letterBox;
     public float transitionTimer = 2f;
     
@@ -30,7 +31,7 @@ public class Duel_Manager : MonoBehaviour
             FindDuelists();
             letterBox.Show(150f, 0.3f);
             Limiter = 1;
-            CameraControl();
+            CameraSwitch();
             // StartCoroutine("CinematicWalkTimer");
         }
 
@@ -39,7 +40,7 @@ public class Duel_Manager : MonoBehaviour
             letterBox.Hide(0.3f);
             Dueling.Clear();
             Limiter = 0;
-            CameraControl();
+            CameraSwitch();
         }
 
         if (Limiter == 1){
@@ -47,7 +48,7 @@ public class Duel_Manager : MonoBehaviour
             playerTrans.transform.position = Vector3.MoveTowards(playerTrans.transform.position, Dueling[0].transform.position, step);
             playerTrans.GetComponent<Animator>().SetFloat("Blend", walkSpeed, 0.3f, Time.deltaTime);
             foreach (GameObject obj in Dueling){
-                obj.transform.position = Vector3.MoveTowards(obj.transform.position, playerTrans.transform.position, step);
+                // obj.transform.position = Vector3.MoveTowards(obj.transform.position, playerTrans.transform.position, step);
                 obj.GetComponent<Animator>().SetFloat("Blend", 0.3f, 0.3f, Time.deltaTime);
             }
             
@@ -55,21 +56,39 @@ public class Duel_Manager : MonoBehaviour
         }
     }
 
-    void CameraControl(){
+    void CameraSwitch(){
         if (Limiter == 1){
             FindObjectOfType<CinemachineFreeLook>().enabled = false;
+            FindObjectOfType<CinemachineFreeLook>().m_XAxis.m_InputAxisName = null; 
+            FindObjectOfType<CinemachineFreeLook>().m_YAxis.m_InputAxisName = null;
             duelCamera[0].gameObject.SetActive(true);
+            StartCoroutine(CameraTransition());
         }else if (Limiter == 0){
             FindObjectOfType<CinemachineFreeLook>().enabled = true;
-            duelCamera[0].gameObject.SetActive(false);
+            FindObjectOfType<CinemachineFreeLook>().m_XAxis.m_InputAxisName = "Mouse X";
+            FindObjectOfType<CinemachineFreeLook>().m_YAxis.m_InputAxisName = "Mouse Y";
+            transition = 0;
+            foreach (CinemachineVirtualCamera virt in duelCamera){
+                virt.gameObject.SetActive(false);
+            }
+            // duelCamera[0].gameObject.SetActive(false);
         }
     }
 
-    // IEnumerator CameraTransition(){
-    //     print("Switch");
-    //     yield return new WaitForSeconds(2f);
-    //     print("Switch");
-    // }
+    IEnumerator CameraTransition(){
+        yield return new WaitForSeconds(2f);
+        if (transition == 0){
+            duelCamera[0].gameObject.SetActive(false);
+            duelCamera[1].gameObject.SetActive(true);
+            transition = 1;
+            StartCoroutine(CameraTransition());
+            print("Switch 1");
+        }else if (transition == 1){
+            duelCamera[1].gameObject.SetActive(false);
+            duelCamera[2].gameObject.SetActive(true);
+            print("Switch 2");
+        }
+    }
 
     public void FindDuelists(){
         if (visible.Count < 3 && visible.Count > 0 && Dueling.Count < 3){
