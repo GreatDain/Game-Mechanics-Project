@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController))]
 public class Player_Duel_Behaviour : MonoBehaviour
@@ -32,6 +33,7 @@ public class Player_Duel_Behaviour : MonoBehaviour
 
     public float verticalVel;
     private Vector3 moveVector;
+
     // public Letterbox letterBox;
 
     // Start is called before the first frame update
@@ -45,6 +47,10 @@ public class Player_Duel_Behaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R)){
+            SceneManager.LoadScene("Standoff");
+        }
+
         InputMagnitude ();
 
         isGrounded = controller.isGrounded;
